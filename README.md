@@ -9,7 +9,7 @@ Here is my python source code for training an agent to play Tetris. It uses a do
   <i>Tetris demo</i>
 </p>
 
-The full demo can be found at [here](https://youtu.be/KTb5R5UUdDc).
+The full demo can be found at [here](https://www.youtube.com/watch?v=fKL5muTWCb0).
 
 ## How it works
 ### States & Actions
