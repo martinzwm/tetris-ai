@@ -31,17 +31,13 @@ To put these together, the input of the model is of shape (N, C):
 - C is the number of attribute we track to make a decision. C = 4 in this case.
 
 ### Model
-The bare-bone deep Q-Learning model is adapted from [here](https://github.com/uvipen/Tetris-deep-Q-learning-pytorch), the objective is to minimize the MSE of r<sub>j</sub> + \gamma max{q(s<sub>j+1</sub>)} - q(s<sub>j</sub>).
+The bare-bone deep Q-Learning model is adapted from [here](https://github.com/uvipen/Tetris-deep-Q-learning-pytorch), the objective is to minimize the MSE of $r_t + \gamma \space max(q(s_{t+1}))-q(s_j)$.
 
-<p align="center">
-  <img src="images/dqn_objective.jpg"/>
-</p>
+$$\large J(\textbf{w}) = \textbf{E}_{(s_t, a_t, r_t, s_{t+1})}[(y_t^{DQN} - \hat{q}(s_t, a_t, \textbf{w}))^2]$$
 
-y<sub>t</sub><sup>DQN</sup> for one-step estimator learning target is basically the same as TD(0):
+$y_t^{DQN}$ for one-step estimator learning target is basically the same as TD(0):
 
-<p align="center">
-  <img src="images/dqn_y.jpg"/>
-</p>
+$$\large y_t^{DQN} = r_t + \gamma \space \underset{a'}{max}[\hat{q}(s_{t+1}, a', \textbf{w}^-]$$
 
 Since this is a value-based approach, the optimal policy is found by picking the action that could optimize the value function given a particular state.
 
@@ -56,13 +52,9 @@ Maximization bias is introduced in Q-learning when we take the maximum of variou
 
 Furthermore, we can update the evaluation network (target network) periodically instead of updating at every step of training. By doing so, we are not using a constantly shifting set of values to adjust our network; therefore, preventing from falling into a feedback loop between the target and estimated Q-value. By setting the the target network constant for a certain number of steps, the behaviour of the RL agent is also stabilized. The frequency at which the target updates is an important parameter, setting the frequency too high would deteriorate the stabilization effects, setting it too low inhibits learning.
 
-y<sub>t</sub><sup>DoubleDQN</sup> for one-step estimator learning target is shown below. W represents the weights for the Q-value estimation networks and W' is the weights for the target network.
+$y_t^{DoubleDQN}$ for one-step estimator learning target is shown below. W represents the weights for the Q-value estimation networks and W' is the weights for the target network.
 
-<p align="center">
-  <img src="images/ddqn_y.jpg"
-  height="38"
-  >
-</p>
+$$\large y_t^{DoubleQ} = r_t + \gamma \space \hat{q}(s_{t+1}, \underset{a'}{argmax}[\hat{q}(s_{t+1}, a', \textbf{w})], \textbf{w}')$$
 
 ### Prioritized Experience Replay
 Data collected by the RL agent is usally not iid, unlike supervised learning. The reward you will get at the next timestep is highly related to the reward you have at the current timestep. To improve data efficiency and remove sample correlations, minibatch is sampled from a pool of stored experiences, called replay buffer.
@@ -71,11 +63,7 @@ In the original implementation, the experience replay is random. In this [paper]
 
 To tackle this problem, we assign a priority value based on TD error. `(state, action, reward, next_state)` tuple with high error should be selected more often during the training process. The priority value for stochastic prioritization is defined as below:
 
-<p align="center">
-  <img src="images/priority.jpg"
-  height="50"
-  >
-</p>
+$$\large P(i) = \frac{p_i^a}{\Sigma_k \space p_k^a}$$
 
 where:
 - P(i) is the priority value
